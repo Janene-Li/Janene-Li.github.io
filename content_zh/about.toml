@@ -1,0 +1,14 @@
+type = "about"
+title = "主页"
+
+[[sections]]
+id = "about"
+type = "markdown"
+source = "bio.md"
+title = "关于我"
+
+[[sections]]
+id = "reading-notes"
+type = "markdown"
+source = "reading-notes.md"
+title = "读书笔记"

@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"janene-li.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="由简单的抛硬币试验可以引导出如此的震撼的算法，数学之强大。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hyperloglog">
+<meta property="og:url" content="https://janene-li.github.io/2022/01/04/hyperloglog/index.html">
+<meta property="og:site_name" content="Enhan Li">
+<meta property="og:description" content="由简单的抛硬币试验可以引导出如此的震撼的算法，数学之强大。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://janene-li.github.io/2022/01/04/hyperloglog/image-20220104103656766.png">
+<meta property="og:image" content="https://janene-li.github.io/2022/01/04/hyperloglog/image-20220104103910447.png">
+<meta property="og:image" content="https://janene-li.github.io/2022/01/04/hyperloglog/image-20220104104249450.png">
+<meta property="og:image" content="https://janene-li.github.io/2022/01/04/hyperloglog/image-20220104153208481.png">
+<meta property="article:published_time" content="2022-01-04T02:30:08.000Z">
+<meta property="article:modified_time" content="2022-01-04T07:33:23.561Z">
+<meta property="article:author" content="Enhan Li">
+<meta property="article:tag" content="sketch">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://janene-li.github.io/2022/01/04/hyperloglog/image-20220104103656766.png">
+
+<link rel="canonical" href="https://janene-li.github.io/2022/01/04/hyperloglog/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>hyperloglog | Enhan Li</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Enhan Li</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://janene-li.github.io/2022/01/04/hyperloglog/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Enhan Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Enhan Li">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          hyperloglog
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-01-04 10:30:08 / Modified: 15:33:23" itemprop="dateCreated datePublished" datetime="2022-01-04T10:30:08+08:00">2022-01-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/summary/" itemprop="url" rel="index"><span itemprop="name">summary</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>3.1k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>3 mins.</span>
+            </span>
+            <div class="post-description">由简单的抛硬币试验可以引导出如此的震撼的算法，数学之强大。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="伯努利实验"><a href="#伯努利实验" class="headerlink" title="伯努利实验"></a>伯努利实验</h1><p>在认识为什么<code>HyperLogLog</code>能够使用极少的内存来统计巨量的数据之前，要先认识下<code>伯努利试验</code>。</p>
+<p>硬币拥有正反两面，一次的上抛至落下，最终出现正反面的概率都是50%。假设一直抛硬币，直到它出现正面为止，我们记录为一次完整的试验，间中可能抛了一次就出现了正面，也可能抛了4次才出现正面。无论抛了多少次，只要出现了正面，就记录为一次试验。这个试验就是<code>伯努利试验</code>。</p>
+<p>那么对于多次的<code>伯努利试验</code>，假设这个多次为<code>n</code>次。就意味着出现了<code>n</code>次的正面。假设每次<code>伯努利试验</code>所经历了的抛掷次数为<code>k</code>。第一次<code>伯努利试验</code>，次数设为<code>k1</code>，以此类推，第<code>n</code>次对应的是<code>kn</code></p>
+<p>其中，对于这<code>n</code>次<code>伯努利试验</code>中，必然会有一个最大的抛掷次数<code>k</code>，例如抛了12次才出现正面，那么称这个为<code>k_max</code>，代表抛了最多的次数。</p>
+<p><code>伯努利试验</code>容易得出有以下结论：</p>
+<ol>
+<li>n 次伯努利过程的投掷次数都不大于 k_max。</li>
+<li>n 次伯努利过程，至少有一次投掷次数等于 k_max</li>
+</ol>
+<p>最终结合极大似然估算的方法，发现在<code>n</code>和<code>k_max</code>中存在估算关联：<code>n = 2^(k_max)</code> 。这种通过局部信息预估整体数据流特性的方法似乎有些超出我们的基本认知，需要用概率和统计的方法才能推导和验证这种关联关系。</p>
+<p>例如下面的样子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">第一次试验: 抛了3次才出现正面，此时 k=3，n=1</span><br><span class="line">第二次试验: 抛了2次才出现正面，此时 k=2，n=2</span><br><span class="line">第三次试验: 抛了6次才出现正面，此时 k=6，n=3</span><br><span class="line">第n 次试验：抛了12次才出现正面，此时我们估算， n = 2^12</span><br></pre></td></tr></table></figure>
+<p>假设上面例子中实验组数共3组，那么 k_max = 6，最终 n=3，我们放进估算公式中去，明显： 3 ≠ 2^6 。也即是说，当试验次数很小的时候，这种估算方法的误差是很大的。</p>
+<h1 id="估算优化"><a href="#估算优化" class="headerlink" title="估算优化"></a>估算优化</h1><p>在上面的3组例子中，我们称为一轮的估算。如果只是进行一轮的话，当 n 足够大的时候，估算的误差率会相对减少，但仍然不够小。</p>
+<p>那么是否可以进行多轮呢？例如进行 100 轮或者更多轮次的试验，然后再取每轮的 k_max，再取平均数，即: <code>k_mx/100</code>。最终再估算出 n。下面是<code>LogLog</code>的估算公式：</p>
+<p><img src="/2022/01/04/hyperloglog/image-20220104103656766.png" alt="image-20220104103656766" style="zoom: 67%;"></p>
+<ul>
+<li><p>上面公式的<code>DVLL</code>对应的就是<code>n</code>，</p>
+</li>
+<li><p><code>constant</code>是修正因子，它的具体值是不定的，可以根据实际情况而分支设置。</p>
+</li>
+<li><p><code>m</code>代表的是试验的轮数</p>
+</li>
+<li><p>头上有一横的<code>R</code>就是平均数：<code>(k_max_1 + ... + k_max_m)/m</code></p>
+</li>
+</ul>
+<p>这种通过<strong>增加试验轮次</strong>，再取<code>k_max</code>平均数的算法优化就是<code>LogLog</code>的做法。</p>
+<p>而 <code>HyperLogLog</code>和<code>LogLog</code>的区别就是，它采用的不是<code>平均数</code>，而是<code>调和平均数</code>。<code>调和平均数</code>比<code>平均数</code>的好处就是不容易受到大的数值的影响。下面举个例子：</p>
+<p>求平均工资: A的是1000/月，B的30000/月。采用平均数的方式就是： (1000 + 30000) / 2 = 15500, 采用调和平均数的方式就是： 2/(1/1000 + 1/30000) ≈ 1935.484, 明显地，<code>调和平均数</code>比<code>平均数</code>的效果是要更好的。下面是<code>调和平均数</code>的计算方式，<code>∑</code> 是累加符号</p>
+<p><img src="/2022/01/04/hyperloglog/image-20220104103910447.png" alt="image-20220104103910447" style="zoom:50%;"></p>
+<h1 id="扯上关系"><a href="#扯上关系" class="headerlink" title="扯上关系"></a>扯上关系</h1><p>上面的内容我们已经知道，在抛硬币的例子中，可以通过一次伯努利试验中出现的<code>k_max</code>来估算<code>n</code>。</p>
+<p>那么这种估算方法如何和下面问题有所关联呢？</p>
+<p>例如： 统计 APP或网页 的一个页面，每天有多少用户点击进入的次数。同一个用户的反复点击进入记为 1 次，<code>HyperLogLog</code>是这样做的。对于输入的数据，进行下面几个步骤：</p>
+<h3 id="1-bit-string"><a href="#1-bit-string" class="headerlink" title="1. bit string"></a>1. bit string</h3><p>通过<code>hash</code>函数，将数据转为<code>比特串</code>，例如输入5，便转为：101。为什么要这样转化呢？</p>
+<p>是因为要和抛硬币对应上，<code>比特串</code>中，0 代表了反面，1 代表了正面，如果一个数据最终被转化了 <code>10010000</code>，那么<strong>从右往左</strong>，从低位往高位看，我们可以认为，首次出现 1 的时候，就是正面。</p>
+<p>那么基于上面的估算结论，我们可以通过多次抛硬币实验的最大抛到正面的次数来预估总共进行了多少次实验，同样也就可以根据存入数据中，转化后的出现了 1 的最大的位置 k_max 来估算存入了多少数据。</p>
+<h3 id="2-bucket"><a href="#2-bucket" class="headerlink" title="2. bucket"></a>2. bucket</h3><p>分桶就是分多少轮。抽象到计算机存储中去，就是存储的是一个以单位是比特(bit)，长度为 L 的大数组 S ，将 S 平均分为 m 组，注意这个 m 组，就是对应多少轮，然后每组所占有的比特个数是平均的，设为 P。容易得出下面的关系：</p>
+<ul>
+<li>L = S.length</li>
+<li>L = m * p</li>
+<li>以 K 为单位，S 占用的内存 = L / 8 / 1024</li>
+</ul>
+<p>在 <code>Redis</code> 中，<code>HyperLogLog</code>设置为：m=16834，p=6，L=16834 <em> 6。占用内存为=16834 </em> 6 / 8 / 1024 = 12K</p>
+<p>形象化为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">  第0组     第1组                       .... 第16833组</span><br><span class="line">[000 000] [000 000] [000 000] [000 000] .... [000 000]</span><br></pre></td></tr></table></figure>
+<h3 id="3-对应"><a href="#3-对应" class="headerlink" title="3. 对应"></a>3. 对应</h3><p>现在回到我们的原始APP页面统计用户的问题中去。</p>
+<ul>
+<li>设 APP 主页的 key 为： main</li>
+<li>用户 id 为：idn , n-&gt;0,1,2,3….</li>
+</ul>
+<p>在这个统计问题中，不同的用户 id 标识了一个用户，那么我们可以把用户的 id 作为被<code>hash</code>的输入。即：</p>
+<blockquote>
+<p>hash(id) = 比特串</p>
+</blockquote>
+<p>不同的用户 id，必然拥有不同的<code>比特串</code>。每一个<code>比特串</code>，也必然会至少出现一次 1 的位置。我们类比每一个<code>比特串</code>为一次<code>伯努利试验</code>。</p>
+<p>现在要<code>分轮</code>，也就是<code>分桶</code>。所以我们可以设定，每个<code>比特串</code>的前多少位转为10进制后，其值就对应于所在桶的标号。假设<code>比特串</code>的低两位用来计算桶下标志，此时有一个用户的id的<code>比特串</code>是：1001011000011。它的所在桶下标为：<code>11(2) = 1*2^1 + 1*2^0 = 3</code>，处于第3个桶，即第3轮中。</p>
+<p>上面例子中，计算出桶号后，剩下的<code>比特串</code>是：10010110000，从低位到高位看，第一次出现 1 的位置是 5 。也就是说，此时第3个桶，第3轮的试验中，<code>k_max = 5</code>。5 对应的二进制是：101，又因为每个桶有 p 个比特位。当 p&gt;=3 时，便可以将 101 存进去。</p>
+<p>模仿上面的流程，多个不同的用户 id，就被分散到不同的桶中去了，且每个桶有其 k_max。然后当要统计出 <code>main</code> 页面有多少用户点击量的时候，就是一次估算。最终结合所有桶中的 k_max，代入估算公式，便能得出估算值。</p>
+<p>下面是 <code>HyperLogLog</code> 的结合了调和平均数的估算公式，变量释意和<code>LogLog</code>的一样:</p>
+<p><img src="/2022/01/04/hyperloglog/image-20220104104249450.png" alt="image-20220104104249450" style="zoom:33%;"></p>
+<h1 id="summary"><a href="#summary" class="headerlink" title="summary"></a>summary</h1><div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>伯努利实验</th>
+<th>hyperloglog</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>一次伯努利实验</td>
+<td>一直抛硬币，直到出现正面为止</td>
+<td>每一个bit string 类比为一次伯努利实验,Bit string 从右向左(低位到高位)首次出现1的时候，是正面</td>
+</tr>
+<tr>
+<td>n次伯努利实验</td>
+<td>出现n次正面，抛掷次数为k，n次中最大的k记为k_max,根据2^k_max估算n</td>
+<td>n次哈希生成n个bit string代表n次伯努利实验, 根据存入数据转化后出现了1的最大位置k来估算存入了多少数据</td>
+</tr>
+<tr>
+<td>m轮n次伯努利实验</td>
+<td>取m轮的k的调和平均为R,调和平均不容易收到大数值的影响</td>
+<td>将bit string S 平均分成m组（对应m轮）， 长度为p， 字符串长度为L= m*p, 每个string选地位的x位作为bucket index，类比为伯努利实验的轮数</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><img src="/2022/01/04/hyperloglog/image-20220104153208481.png" alt="image-20220104153208481"></p>
+<p>在实现过程中，还需要string中的一小部分当作存储的索引（register index）,用于更新register values</p>
+<p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/linguanh/p/10460421.html">https://www.cnblogs.com/linguanh/p/10460421.html</a></p>
+<p>本文所有图片来源于：</p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/55defda6dcd2">https://www.jianshu.com/p/55defda6dcd2</a></p>
+<p>本文内容参考于：</p>
+<p><a target="_blank" rel="noopener" href="http://www.rainybowe.com/blog/2017/07/13/神奇的HyperLogLog算法/index.html">http://www.rainybowe.com/blog/2017/07/13/神奇的HyperLogLog算法/index.html</a></p>
+<p>手动直观观察 <code>LogLog</code> 和 <code>HyperLogLog</code> 变化的网站：</p>
+<p><a target="_blank" rel="noopener" href="http://content.research.neustar.biz/blog/hll.html">http://content.research.neustar.biz/blog/hll.html</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/sketch/" rel="tag"># sketch</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/12/31/Carpe/" rel="prev" title="Carpe">
+      <i class="fa fa-chevron-left"></i> Carpe
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/01/04/Tracking-Normalized-Network-Traffic-Entropy-to-Detect-DDoS-Attacks-in-P4/" rel="next" title="Tracking Normalized Network Traffic Entropy to Detect DDoS Attacks in P4">
+      Tracking Normalized Network Traffic Entropy to Detect DDoS Attacks in P4 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BC%AF%E5%8A%AA%E5%88%A9%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.</span> <span class="nav-text">伯努利实验</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BC%B0%E7%AE%97%E4%BC%98%E5%8C%96"><span class="nav-number">2.</span> <span class="nav-text">估算优化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%89%AF%E4%B8%8A%E5%85%B3%E7%B3%BB"><span class="nav-number">3.</span> <span class="nav-text">扯上关系</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-bit-string"><span class="nav-number">3.0.1.</span> <span class="nav-text">1. bit string</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-bucket"><span class="nav-number">3.0.2.</span> <span class="nav-text">2. bucket</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%AF%B9%E5%BA%94"><span class="nav-number">3.0.3.</span> <span class="nav-text">3. 对应</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#summary"><span class="nav-number">4.</span> <span class="nav-text">summary</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Enhan Li"
+      src="/avatar.png">
+  <p class="site-author-name" itemprop="name">Enhan Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Janene-Li" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Janene_Li" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:enhanli_cs@163.com" title="E-Mail → enhanli_cs@163.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Enhan Li</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="Symbols count total">17k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">16 mins.</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
