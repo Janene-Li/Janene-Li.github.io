@@ -52,11 +52,13 @@ function loadDynamicPageData(slug: string, locale?: string): DynamicPageLocaleDa
 
 export function generateStaticParams() {
   const config = getConfig();
-  return config.navigation
+  const pages = config.navigation
     .filter((nav) => nav.type === 'page' && nav.target !== 'about')
-    .map((nav) => ({
-      slug: nav.target,
-    }));
+    .map((nav) => ({ slug: nav.target }));
+  // Keep existing reading-note links available while hiding their navigation.
+  return pages.some((page) => page.slug === 'notes')
+    ? pages
+    : [...pages, { slug: 'notes' }];
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {

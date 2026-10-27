@@ -22,9 +22,3 @@ type = "publications"
 title = "精选论文"
 filter = "selected"
 limit = 3
-
-[[sections]]
-id = "reading-notes"
-type = "markdown"
-source = "reading-notes.md"
-title = "读书笔记"
