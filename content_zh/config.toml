@@ -1,14 +1,14 @@
 [site]
 url = "https://janene-li.github.io"
 title = "Enhan Li"
-description = "Enhan Li 的个人主页与读书笔记。"
-favicon = "/favicon.png"
+description = "Enhan Li，香港大学 NICE Lab 博士生，研究可靠高效的 LLM 智能体、网络化 AI 系统与 LLM 后训练。"
+favicon = "/avatar.png"
 last_updated = "2026 年 10 月 27 日"
 
 [author]
 name = "Enhan Li"
-title = ""
-institution = ""
+title = "博士研究生"
+institution = "The University of Hong Kong"
 avatar = "/avatar.png"
 
 [social]
@@ -24,7 +24,7 @@ enable_one_page_mode = false
 enabled = true
 locales = ["en", "zh"]
 default_locale = "en"
-mode = "auto"
+mode = "fixed"
 fixed_locale = "en"
 persist = true
 switcher = true
@@ -38,6 +38,12 @@ title = "主页"
 type = "page"
 target = "about"
 href = "/"
+
+[[navigation]]
+title = "论文"
+type = "page"
+target = "publications"
+href = "/publications/"
 
 [[navigation]]
 title = "读书笔记"

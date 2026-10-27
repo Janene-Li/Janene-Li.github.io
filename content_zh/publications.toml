@@ -1,0 +1,4 @@
+type = "publication"
+title = "论文"
+description = "关于 LLM 智能体、网络化 AI 系统、模型后训练及网络测量的研究。"
+source = "publications.bib"

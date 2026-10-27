@@ -1,11 +1,27 @@
 type = "about"
 title = "主页"
 
+[profile]
+research_interests = ["Networked AI Systems", "Reliable and Efficient LLM Agents", "LLM Post-training"]
+
 [[sections]]
 id = "about"
 type = "markdown"
 source = "bio.md"
 title = "关于我"
+
+[[sections]]
+id = "news"
+type = "list"
+source = "news.toml"
+title = "最新动态"
+
+[[sections]]
+id = "selected-publications"
+type = "publications"
+title = "精选论文"
+filter = "selected"
+limit = 3
 
 [[sections]]
 id = "reading-notes"
