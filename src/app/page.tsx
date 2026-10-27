@@ -6,6 +6,10 @@ import { Publication } from '@/types/publication';
 import { BasePageConfig, PublicationPageConfig, TextPageConfig, CardPageConfig } from '@/types/page';
 import { getRuntimeI18nConfig } from '@/lib/i18n/config';
 
+export function generateMetadata() {
+  return { alternates: { canonical: '/' }, openGraph: { url: '/' } };
+}
+
 interface SectionConfig {
   id: string;
   type: 'markdown' | 'publications' | 'list';

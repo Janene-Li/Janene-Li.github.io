@@ -3,7 +3,7 @@
 基于 https://github.com/xyjoey/PRISM 的 PRISM 模板；保留 MIT LICENSE。
 
 - 旧仓库：https://github.com/Janene-Li/Janene-Li.github.io，默认分支 master。
-- 已沿用原站昵称 Janene 和公开邮箱 enhanli_cs@163.com，并修正 GitHub 链接。头像使用用户提供的图片，并加入用户确认的 Google Scholar 主页。
+- 按用户要求将展示名统一为 Enhan Li，沿用公开邮箱 enhanli_cs@163.com，并修正 GitHub 链接。头像使用用户提供的图片，并加入用户确认的 Google Scholar 主页。
 - 已保留 10 篇旧文章及其 URL、图片、分类、标签和归档。
 - 首页支持中英文和深色模式，旧文章内容保持原样。
 - 原 About 页为空；新简介仅概括旧站笔记主题，不包含未经提供的学历或任职。
@@ -29,3 +29,5 @@ GitHub Pages 需将 Settings → Pages → Source 设为 GitHub Actions。工作
 ## 验证
 
 本地已通过 Next.js 15.5.28 生产构建与 TypeScript 类型检查，并检查中英文切换、深色模式和全部 10 篇笔记列表。头像已替换为用户提供的图片。
+
+已补充 canonical 链接、robots.txt 与 sitemap.xml；旧笔记和归档的作者及站名也统一为 Enhan Li。

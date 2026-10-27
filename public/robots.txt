@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://janene-li.github.io/sitemap.xml

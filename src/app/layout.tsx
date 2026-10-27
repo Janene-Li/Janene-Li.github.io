@@ -14,6 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const openGraphLocale = runtimeI18n.defaultLocale === 'zh' ? 'zh_CN' : 'en_US';
 
   return {
+    metadataBase: new URL(config.site.url),
     title: {
       default: config.site.title,
       template: `%s | ${config.site.title}`,

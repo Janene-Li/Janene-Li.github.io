@@ -1,11 +1,12 @@
 [site]
-title = "Janene"
-description = "Janene 的个人主页与读书笔记。"
+url = "https://janene-li.github.io"
+title = "Enhan Li"
+description = "Enhan Li 的个人主页与读书笔记。"
 favicon = "/favicon.png"
 last_updated = "2026 年 10 月 27 日"
 
 [author]
-name = "Janene"
+name = "Enhan Li"
 title = ""
 institution = ""
 avatar = "/avatar.png"

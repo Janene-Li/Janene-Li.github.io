@@ -1,11 +1,12 @@
 [site]
-title = "Janene"
-description = "Janene’s personal website and reading notes."
+url = "https://janene-li.github.io"
+title = "Enhan Li"
+description = "Enhan Li’s personal website and reading notes."
 favicon = "/favicon.png"
 last_updated = "October 27, 2026"
 
 [author]
-name = "Janene"
+name = "Enhan Li"
 title = ""
 institution = ""
 avatar = "/avatar.png"
