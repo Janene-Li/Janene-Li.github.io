@@ -1,0 +1,53 @@
+type = "card"
+title = "读书笔记"
+description = "原博客中的论文阅读与技术学习笔记。"
+
+[[items]]
+title = "SketchML"
+date = "2022-01-17"
+content = "[阅读全文](/2022/01/17/SketchML/)"
+
+[[items]]
+title = "Sprintz"
+date = "2022-01-11"
+content = "[阅读全文](/2022/01/11/Sprintz/)"
+
+[[items]]
+title = "ACC"
+date = "2022-01-07"
+content = "[阅读全文](/2022/01/07/ACC/)"
+
+[[items]]
+title = "hyperloglog"
+date = "2022-01-04"
+content = "[阅读全文](/2022/01/04/hyperloglog/)"
+
+[[items]]
+title = "INDDoS"
+date = "2022-01-04"
+content = "[阅读全文](/2022/01/04/INDDoS/)"
+
+[[items]]
+title = "INVEST"
+date = "2022-01-04"
+content = "[阅读全文](/2022/01/04/INVEST/)"
+
+[[items]]
+title = "Tracking Normalized Network Traffic Entropy to Detect DDoS Attacks in P4"
+date = "2022-01-04"
+content = "[阅读全文](/2022/01/04/Tracking-Normalized-Network-Traffic-Entropy-to-Detect-DDoS-Attacks-in-P4/)"
+
+[[items]]
+title = "Carpe"
+date = "2021-12-31"
+content = "[阅读全文](/2021/12/31/Carpe/)"
+
+[[items]]
+title = "Spreadskech"
+date = "2021-12-15"
+content = "[阅读全文](/2021/12/15/Spreadskech/)"
+
+[[items]]
+title = "sketch"
+date = "2021-12-07"
+content = "[阅读全文](/2021/12/07/sketch/)"

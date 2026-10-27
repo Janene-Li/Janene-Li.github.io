@@ -1,0 +1,45 @@
+[site]
+title = "Janene"
+description = "Janene’s personal website and reading notes."
+favicon = "/favicon.png"
+last_updated = "October 27, 2026"
+
+[author]
+name = "Janene"
+title = ""
+institution = ""
+avatar = "/avatar.png"
+
+[social]
+email = "enhanli_cs@163.com"
+github = "https://github.com/Janene-Li"
+google_scholar = "https://scholar.google.com/citations?user=IKkqR9QAAAAJ"
+
+[features]
+enable_likes = false
+enable_one_page_mode = false
+
+[i18n]
+enabled = true
+locales = ["en", "zh"]
+default_locale = "en"
+mode = "auto"
+fixed_locale = "en"
+persist = true
+switcher = true
+
+[i18n.labels]
+zh = "中文"
+en = "English"
+
+[[navigation]]
+title = "About"
+type = "page"
+target = "about"
+href = "/"
+
+[[navigation]]
+title = "Reading Notes"
+type = "page"
+target = "notes"
+href = "/notes/"
