@@ -44,9 +44,3 @@ title = "Publications"
 type = "page"
 target = "publications"
 href = "/publications/"
-
-[[navigation]]
-title = "Reading Notes"
-type = "page"
-target = "notes"
-href = "/notes/"
