@@ -1,0 +1,4 @@
+type = "publication"
+title = "Publications"
+description = "Research on LLM agents, networked AI systems, model post-training, and network measurement."
+source = "publications.bib"

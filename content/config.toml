@@ -1,14 +1,14 @@
 [site]
 url = "https://janene-li.github.io"
 title = "Enhan Li"
-description = "Enhan Li’s personal website and reading notes."
-favicon = "/favicon.png"
+description = "Enhan Li is a Ph.D. student at HKU NICE Lab working on reliable and efficient LLM agents, networked AI systems, and LLM post-training."
+favicon = "/avatar.png"
 last_updated = "October 27, 2026"
 
 [author]
 name = "Enhan Li"
-title = ""
-institution = ""
+title = "Ph.D. Student"
+institution = "The University of Hong Kong"
 avatar = "/avatar.png"
 
 [social]
@@ -24,7 +24,7 @@ enable_one_page_mode = false
 enabled = true
 locales = ["en", "zh"]
 default_locale = "en"
-mode = "auto"
+mode = "fixed"
 fixed_locale = "en"
 persist = true
 switcher = true
@@ -38,6 +38,12 @@ title = "About"
 type = "page"
 target = "about"
 href = "/"
+
+[[navigation]]
+title = "Publications"
+type = "page"
+target = "publications"
+href = "/publications/"
 
 [[navigation]]
 title = "Reading Notes"
