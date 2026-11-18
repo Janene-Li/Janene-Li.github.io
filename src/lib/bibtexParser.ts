@@ -60,8 +60,13 @@ export function parseBibTeX(bibtexContent: string, locale?: string): Publication
     // Parse selected field (convert string to boolean)
     const selected = tags.selected === 'true' || tags.selected === 'yes';
 
-    // Parse preview field (remove braces if present)
-    const preview = tags.preview?.replace(/[{}]/g, '');
+    // Parse preview field (comma separated list of images under /papers)
+    const previewList = (tags.preview || '')
+      .replace(/[{}]/g, '')
+      .split(',')
+      .map((item: string) => item.trim().replace(/^["']|["']$/g, ''))
+      .filter(Boolean);
+    const preview = previewList[0];
     const title = parseBibTeXInline(tags.title || 'Untitled');
 
     // Create publication object
@@ -91,6 +96,7 @@ export function parseBibTeX(bibtexContent: string, locale?: string): Publication
       description: cleanBibTeXString(tags.description || tags.note),
       selected,
       preview,
+      previews: previewList.length > 0 ? previewList : undefined,
 
       // Store original BibTeX (excluding custom fields)
       bibtex: reconstructBibTeX(entry, ['selected', 'preview', 'description', 'keywords', 'code']),

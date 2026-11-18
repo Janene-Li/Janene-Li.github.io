@@ -23,6 +23,11 @@ interface PublicationsListProps {
     embedded?: boolean;
 }
 
+function getPreviewImages(pub: Publication): string[] {
+    if (pub.previews?.length) return pub.previews;
+    return pub.preview ? [pub.preview] : [];
+}
+
 export default function PublicationsList({ config, publications, embedded = false }: PublicationsListProps) {
     const messages = useMessages();
     const [searchQuery, setSearchQuery] = useState('');
@@ -200,16 +205,19 @@ export default function PublicationsList({ config, publications, embedded = fals
                             className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 hover:shadow-md transition-all duration-200"
                         >
                             <div className="flex flex-col md:flex-row gap-6">
-                                {pub.preview && (
-                                    <div className="w-full md:w-72 flex-shrink-0">
-                                        <Image
-                                            src={`/papers/${pub.preview}`}
-                                            alt={pub.title}
-                                            width={0}
-                                            height={0}
-                                            sizes="(max-width: 768px) 100vw, 288px"
-                                            className="w-full h-auto rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white"
-                                        />
+                                {getPreviewImages(pub).length > 0 && (
+                                    <div className="w-full md:w-72 flex-shrink-0 space-y-2">
+                                        {getPreviewImages(pub).map((img, imgIndex) => (
+                                            <Image
+                                                key={img}
+                                                src={`/papers/${img}`}
+                                                alt={`${pub.title} — figure ${imgIndex + 1}`}
+                                                width={0}
+                                                height={0}
+                                                sizes="(max-width: 768px) 100vw, 288px"
+                                                className="w-full h-auto rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white"
+                                            />
+                                        ))}
                                     </div>
                                 )}
                                 <div className="flex-grow">
