@@ -5,6 +5,7 @@ import Footer from '@/components/layout/Footer';
 import { ThemeProvider } from '@/components/ui/ThemeProvider';
 import { LocaleProvider } from '@/components/ui/LocaleProvider';
 import { getConfig } from '@/lib/config';
+import { getPageConfig } from '@/lib/content';
 import { getRuntimeI18nConfig } from '@/lib/i18n/config';
 import type { SiteConfig } from '@/lib/config';
 
@@ -129,10 +130,33 @@ export default function RootLayout({
     lastUpdatedByLocale,
   } = buildLocalizedConfigMaps(targetLocales);
 
+  const aboutConfig = getPageConfig<{ profile?: { research_interests?: string[] } }>('about');
+  const researchInterests = aboutConfig?.profile?.research_interests;
+
   return (
     <html lang={runtimeI18n.defaultLocale} className="scroll-smooth" suppressHydrationWarning>
       <head>
         <link rel="icon" href={config.site.favicon} type="image/png" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Person',
+              name: config.author.name,
+              alternateName: 'Janene Li',
+              url: config.site.url,
+              image: `${config.site.url}${config.author.avatar}`,
+              jobTitle: config.author.title,
+              affiliation: {
+                '@type': 'Organization',
+                name: config.author.institution,
+              },
+              sameAs: [config.social.github, config.social.google_scholar].filter(Boolean),
+              knowsAbout: researchInterests,
+            }),
+          }}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
