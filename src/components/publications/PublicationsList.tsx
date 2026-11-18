@@ -201,16 +201,15 @@ export default function PublicationsList({ config, publications, embedded = fals
                         >
                             <div className="flex flex-col md:flex-row gap-6">
                                 {pub.preview && (
-                                    <div className="w-full md:w-48 flex-shrink-0">
-                                        <div className="aspect-video md:aspect-[4/3] relative rounded-lg overflow-hidden bg-neutral-100 dark:bg-neutral-800">
-                                            <Image
-                                                src={`/papers/${pub.preview}`}
-                                                alt={pub.title}
-                                                fill
-                                                className="object-cover"
-                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                            />
-                                        </div>
+                                    <div className="w-full md:w-72 flex-shrink-0">
+                                        <Image
+                                            src={`/papers/${pub.preview}`}
+                                            alt={pub.title}
+                                            width={0}
+                                            height={0}
+                                            sizes="(max-width: 768px) 100vw, 288px"
+                                            className="w-full h-auto rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white"
+                                        />
                                     </div>
                                 )}
                                 <div className="flex-grow">
